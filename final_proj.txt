@@ -1,0 +1,36 @@
+Hanna Brender
+Reid Whitson
+
+path name to file name: /usr/src/minix/drivers/tty/tty/tty.c
+
+add 67
+[
+static int back_overNew(tty_t *tp);
+]
+
+del 1072
+[
+(void) back_overNew(tp);
+]
+
+add 1276
+[
+static int back_overNew(tp)
+register tty_t *tp;
+{
+    u16_t *head;
+    
+    int keepErasing = 1;
+    while(keepErasing) {
+       if (tp->tty_incount == 0) return(0);
+       head = tp->tty_inhead;
+       if(head == tp->tty_inbuf) head = bufend(tp->tty_inbuf);
+       
+       if((*--head & 0xFF) == ' ') {
+          keepErasing = 0;
+       }
+       (void) back_over(tp);
+    }
+    return(1);
+}
+]
